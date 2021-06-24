@@ -14,13 +14,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::post('/projects', [ProjectsController::class, 'store'])->middleware('auth');
-Route::get('/projects', [ProjectsController::class, 'index']);
-Route::get('/projects/{project}', [ProjectsController::class, 'show']);
+Route::middleware('auth')->group(function () {
+
+    Route::prefix('projects')->group(function () {
+        Route::post('/', [ProjectsController::class, 'store']);
+        Route::get('/', [ProjectsController::class, 'index']);
+        Route::get('/{project}', [ProjectsController::class, 'show']);
+    });
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

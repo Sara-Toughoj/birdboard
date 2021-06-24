@@ -21,12 +21,13 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        $projects = Project::all();
+        $projects = auth()->user()->projects;
         return view('projects.index', compact('projects'));
     }
 
     public function show(Project $project)
     {
+        $this->authorize('view', $project);
         return view('projects.show', compact('project'));
     }
 }

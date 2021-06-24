@@ -16,4 +16,10 @@ class Project extends Model
     {
         return "/projects/{$this->id}";
     }
+
+    //------------------------------------ Relationships ---------------------------
+    public function owner()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
