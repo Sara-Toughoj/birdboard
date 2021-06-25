@@ -8,12 +8,18 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ProjectTest extends TestCase
+class ManageProjectTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
+
+    public function guest_can_not_access_project_creation_endpoint()
+    {
+        $this->get('/projects/create')->assertRedirect('login');
+    }
+
     /** @test */
-    public function guest_may_can_not_create_projects()
+    public function guests_can_not_create_projects()
     {
         $attributes = Project::factory()->raw();
 
@@ -39,11 +45,19 @@ class ProjectTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $attributes = Project::factory()->raw();
+        $this->actingAs(User::factory()->create());
 
-        $this->actingAs(User::factory()->create())
-            ->post('/projects', $attributes)
+        $this->get('projects/create')->assertSuccessful();
+
+        $attributes = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+        ];
+
+        $this->post('/projects', $attributes)
             ->assertRedirect('/projects');
+
+        $this->assertDatabaseHas((new Project)->getTable(), $attributes);
 
         $this->get('/projects')
             ->assertSee($attributes['title']);

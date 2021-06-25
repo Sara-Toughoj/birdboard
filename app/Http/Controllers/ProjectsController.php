@@ -30,4 +30,9 @@ class ProjectsController extends Controller
         $this->authorize('view', $project);
         return view('projects.show', compact('project'));
     }
+
+    public function create()
+    {
+        return view('projects.create');
+    }
 }
